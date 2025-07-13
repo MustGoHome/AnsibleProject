@@ -1,0 +1,4 @@
+# Add node to /etc/hosts(node_fqdn=ip)
+ansible.example.com=192.168.20.10
+node1.example.com=192.168.20.20
+node2.example.com=192.168.20.30
