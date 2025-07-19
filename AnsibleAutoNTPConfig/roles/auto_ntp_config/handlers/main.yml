@@ -1,0 +1,7 @@
+---
+# handlers file for auto_ntp_config
+- name: Restart NTP Server
+  ansible.builtin.systemd:
+    name: "{{ ntp_server_provider_service }}"
+    state: restarted
+    enabled: true

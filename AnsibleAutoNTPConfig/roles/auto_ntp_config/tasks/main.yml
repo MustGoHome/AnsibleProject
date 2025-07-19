@@ -1,0 +1,25 @@
+---
+# tasks file for auto_ntp_config
+- name: Verify NTP Provider
+  ansible.builtin.fail:
+    msg: "[ FAIL ] ntp_server_provider의 값이 chrony가 아닙니다."
+  when: ntp_server_provider != 'chrony'
+
+- name: Install NTP Package
+  ansible.builtin.dnf:
+    name: "{{ ntp_server_provider }}"
+    state: present
+
+- name: Configuration NTP Server
+  ansible.builtin.lineinfile:
+    path: /etc/chrony.conf
+    regexp: "^#allow.*"
+    line: "allow {{ ntp_server_allow_subnet }}"
+  notify: Restart NTP Server
+
+- name: Add Service For Firewalld
+  ansible.posix.firewalld:
+    service: ntp
+    permanent: true
+    immediate: true
+    state: enabled

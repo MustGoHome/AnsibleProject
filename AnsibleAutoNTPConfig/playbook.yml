@@ -1,0 +1,36 @@
+---
+- name: NTP Server Config
+  hosts: ntp_server
+  tasks:
+    - name: Role - auto_ntp_config
+      ansible.builtin.include_role:
+        name: auto_ntp_config
+      vars:
+        ntp_server_provider: chrony
+        ntp_server_provider_service: chronyd
+        ntp_server_allow_subnet: 192.168.20.0/24
+
+- name: NTP Client Config
+  hosts: ntp_client
+  vars:
+    host_timezone: Asia/Seoul
+  tasks:
+    - name: Role - rhel-system-roles.timesync
+      ansible.builtin.import_role:
+        name: rhel-system-roles.timesync
+      vars:
+        timesync_ntp_provider: chrony
+        timesync_ntp_servers:
+        - hostname: 192.168.20.10
+          iburst: true
+    
+    - name: Set Timezone
+      ansible.builtin.timezone:
+        name: "{{ host_timezone }}"
+      notify: Restart NTP Client
+  
+  handlers:
+    - name: Restart NTP Client
+      ansible.builtin.systemd:
+        name: chronyd
+        state: restarted
