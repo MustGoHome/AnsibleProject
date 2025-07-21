@@ -1,0 +1,33 @@
+---
+- name: DNS Server Config
+  hosts: dns_server
+  tasks:
+    - name: Role - auto_dns_config
+      ansible.builtin.include_role:
+        name: auto_dns_config
+      vars:
+        dns_server_domain: example.com
+        dns_server_forwarders: 8.8.8.8
+
+- name: DNS Client Config
+  hosts: dns_client
+  tasks:
+    - name: Update DNS
+      community.general.nmcli:
+        conn_name: eth0
+        type: ethernet
+        dns4:
+          - "{{ dns_server_ip }}"
+        dns4_search:
+          - "{{ dns_server_domain }}"
+        state: present
+      vars:
+        dns_server_ip: 192.168.20.10
+        dns_server_domain: example.com
+      notify: Restart NetworkManager
+    
+  handlers:
+    - name: Restart NetworkManager
+      ansible.builtin.systemd:
+        name: NetworkManager
+        state: restarted

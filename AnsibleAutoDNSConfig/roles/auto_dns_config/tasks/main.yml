@@ -1,0 +1,41 @@
+---
+# tasks file for roles/auto_dns_config
+- name: Install DNS Package
+  ansible.builtin.dnf:
+    name: "{{ dns_server_package }}"
+    state: present
+
+- name: Deploy /etc/named.conf
+  ansible.builtin.template:
+    src: named.conf.j2
+    dest: /etc/named.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/named-checkconf %s
+
+- name: Deploy /etc/named.rfc1912.zones
+  ansible.builtin.template:
+    src: rfc1912.zones.j2
+    dest: /etc/named.rfc1912.zones
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/named-checkconf %s
+
+- name: "Deploy /var/named/{{ dns_server_domain }}.zone"
+  ansible.builtin.template:
+    src: zone.j2
+    dest: "/var/named/{{ dns_server_domain }}.zone"
+    owner: root
+    group: root
+    mode: '0644'
+    validate: named-checkzone {{ dns_server_domain }} %s
+  notify: Restart DNS Server
+
+- name: Add Service For Firewalld
+  ansible.posix.firewalld:
+    service: dns
+    permanent: true
+    immediate: true
+    state: enabled

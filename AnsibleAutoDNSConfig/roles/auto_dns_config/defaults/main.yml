@@ -1,0 +1,4 @@
+---
+# defaults file for roles/auto_dns_config
+dns_server_domain: example.com
+dns_server_forwarders: 8.8.8.8

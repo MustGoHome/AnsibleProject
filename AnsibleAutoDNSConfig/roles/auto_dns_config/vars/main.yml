@@ -1,0 +1,5 @@
+---
+# vars file for roles/auto_dns_config
+dns_server_package:
+  - bind
+  - bind-utils

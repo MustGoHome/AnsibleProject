@@ -1,0 +1,6 @@
+[dns_server]
+localhost
+
+[dns_client]
+node1
+node2

@@ -1,0 +1,14 @@
+;; {{ ansible_managed }}
+;; DO NOT MAKE LOCAL MODIFICATIONS TO THIS FILE AS THEY WILL BE LOST
+
+$TTL 86400
+@       IN SOA  ns1.{{ dns_server_domain }}. root.com. (
+                                        10      ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+                                        
+;; DNS Server
+{{ dns_server_domain }}.            IN  NS  ns1.{{ dns_server_domain }}.
+ns1.{{ dns_server_domain }}.        IN  A   {{ ansible_default_ipv4.address }}

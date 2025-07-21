@@ -23,15 +23,15 @@ none
 Example Playbook
 ----------------
 
-      hosts: ntp_server
-      tasks:
-        - name: Role - auto_ntp_config
-          ansible.builtin.include_role:
-            name: auto_ntp_config
-          vars:
-            ntp_server_provider: chrony
-            ntp_server_provider_service: chronyd
-            ntp_server_allow_subnet: 192.168.20.0/24
+  hosts: ntp_server
+  tasks:
+    - name: Role - auto_ntp_config
+      ansible.builtin.include_role:
+        name: auto_ntp_config
+      vars:
+        ntp_server_provider: chrony
+        ntp_server_provider_service: chronyd
+        ntp_server_allow_subnet: 192.168.20.0/24
 
 License
 -------

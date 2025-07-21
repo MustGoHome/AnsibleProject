@@ -1,6 +1,6 @@
 galaxy_info:
   author: Gyeongseop Yu
-  description: Configuration NTP Server with Chrony
+  description: Configuration DNS Server
   company: None
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -39,9 +39,8 @@ galaxy_info:
   #   - 99.99
 
   galaxy_tags:
-  - ntp
-  - chrony
-  - time
+  - dns
+  - bind
   - rhel
   - centos
 

@@ -1,0 +1,7 @@
+---
+# handlers file for roles/auto_dns_config
+- name: Restart DNS Server
+  ansible.builtin.systemd:
+    name: named
+    state: restarted
+    enabled: true
