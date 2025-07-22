@@ -1,0 +1,107 @@
+---
+# tasks file for roles/auto_apache_config
+- name: Install Packages
+  ansible.builtin.dnf:
+    name:
+      - "{{ jdk_package }}"
+      - httpd
+      - python3-pip
+      - mod_ssl
+    state: present
+
+- name: PIP Install cryptography
+  ansible.builtin.pip:
+    name: cryptography
+    state: present
+
+- name: "Create Tomcat System Account - {{ tomcat_user }}"
+  ansible.builtin.user:
+    name: "{{ tomcat_user }}"
+    shell: /sbin/nologin
+    system: true
+
+- name: "Download Tomcat Source - {{ tomcat_source }}"
+  ansible.builtin.unarchive:
+    src: "{{ tomcat_source }}"
+    dest: /usr/local/
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_user }}"
+    remote_src: true
+
+- name: Enroll Environment Variables
+  ansible.builtin.lineinfile:
+    path: /home/tomcat/.bashrc
+    line: "export CATALINA_HOME='{{ tomcat_file }}'"
+
+- name: "Deploy {{ tomcat_file }}/conf/server.xml"
+  ansible.builtin.template:
+    src: server.xml.j2
+    dest: "{{ tomcat_file }}/conf/server.xml"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_user }}"
+    mode: '0600'
+  notify: Restart Tomcat
+
+- name: Deploy /usr/lib/systemd/system/tomcat.service
+  ansible.builtin.template:
+    src: tomcat.service.j2
+    dest: /usr/lib/systemd/system/tomcat.service
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy /etc/httpd/conf/httpd.conf
+  ansible.builtin.template:
+    src: httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy /etc/httpd/conf.d/ssl.conf
+  ansible.builtin.template:
+    src: ssl.conf.j2
+    dest: /etc/httpd/conf.d/ssl.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: httpd -t
+  notify: Restart Apache
+
+- name: Create Private Key
+  community.crypto.openssl_privatekey:
+    path: "{{ ssl_key_path }}"
+    size: 2048
+    type: RSA
+    mode: '0640'
+
+- name: Define CSR
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ ssl_key_path }}"
+    country_name: "{{ ssl_country }}"
+    state_or_province_name: "{{ ssl_state }}"
+    locality_name: "{{ ssl_city }}"
+    organization_name: "{{ ssl_org }}"
+    organizational_unit_name: "{{ ssl_ou }}"
+    common_name: "{{ ssl_cn }}"
+    email_address: "{{ ssl_email }}"
+  register: csr
+
+- name: Create Self-signed Certificate
+  community.crypto.x509_certificate:
+    path: "{{ ssl_crt_path }}"
+    privatekey_path: "{{ ssl_key_path }}"
+    csr_content: "{{ csr.csr }}"
+    provider: selfsigned
+    selfsigned_not_after: "+3650d"
+    mode: '0640'
+
+- name: Add Service For Firewalld
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - http
+    - https

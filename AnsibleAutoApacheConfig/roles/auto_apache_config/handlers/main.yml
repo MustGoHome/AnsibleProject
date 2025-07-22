@@ -1,0 +1,14 @@
+---
+# handlers file for roles/auto_apache_config
+- name: Restart Tomcat
+  ansible.builtin.systemd:
+    name: tomcat
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
+- name: Retart Apache
+  ansible.builtin.systemd:
+    name: httpd
+    state: restarted
+    enabled: true
