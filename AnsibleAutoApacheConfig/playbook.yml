@@ -29,9 +29,29 @@
 - name: Web Test
   hosts: localhost
   tasks:
+    - name: Install PIP3
+      ansible.builtin.dnf:
+        name: python3-pip
+        state: present
+
+    - name: PIP Install Package dnspython
+      ansible.builtin.pip:
+        name: dnspython
+        state: present
+
+    - name: Add DNS - web IN A 192.168.20.20 
+      community.general.nsupdate:
+        key_algorithm: hmac-sha256
+        key_name: ddns-key
+        key_secret: upcPpa6RKpen4/hFJ7p7TikAflVaisukxATItbES4Zw=
+        server: 192.168.20.10
+        zone: example.com
+        record: web
+        value: ["192.168.20.20"]
+
     - name: Request HTTPS
       ansible.builtin.uri:
-        url: https://node1:443
+        url: https://www.example.com:443
         status_code: 200
         validate_certs: false
       register: output

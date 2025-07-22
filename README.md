@@ -4,6 +4,7 @@
 - 2025-07-19 : Add AnsibleAutoNTPConfig
 - 2025-07-21 : Add AnsibleAutoDNSConfig
 - 2025-07-22 : Add AnsibleAutoApacheConfig
+- 2025-07-22 : Update AnsibleAutoDNSConfig - DNS -> DDNS(used TSIG)
 
 ### Scripts
 1. **AnsibleAutoConfig** : Initialize the Ansible manager node and managed nodes. and install an Ansible package from epel-release.

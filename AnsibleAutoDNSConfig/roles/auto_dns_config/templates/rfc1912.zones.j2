@@ -50,4 +50,5 @@ zone "0.in-addr.arpa" IN {
 zone "{{ dns_server_domain }}" IN {
      type master;
      file "{{ dns_server_domain }}.zone";
+     allow-update { key "ddns-key"; };
 };

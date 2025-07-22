@@ -36,7 +36,8 @@ options {
         */
         recursion yes;
 
-        dnssec-validation no;
+        dnssec-enable yes;
+        dnssec-validation yes;
 
         managed-keys-directory "/var/named/dynamic";
         geoip-directory "/usr/share/GeoIP";
@@ -62,3 +63,4 @@ logging {
 
 include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
+include "/etc/named/ddns-key.conf";

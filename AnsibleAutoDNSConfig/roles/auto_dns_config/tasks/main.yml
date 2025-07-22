@@ -5,6 +5,10 @@
     name: "{{ dns_server_package }}"
     state: present
 
+- name: TSIG Keygen
+  ansible.builtin.shell:
+    cmd: tsig-keygen ddns-key > /etc/named/ddns-key.conf
+
 - name: Deploy /etc/named.conf
   ansible.builtin.template:
     src: named.conf.j2
