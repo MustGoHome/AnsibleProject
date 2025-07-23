@@ -6,7 +6,7 @@
 - 2025-07-21 : Add AnsibleAutoDNSConfig
 - 2025-07-22 : Add AnsibleAutoApacheConfig
 - 2025-07-22 : Update AnsibleAutoDNSConfig - DNS -> DDNS(used TSIG)
-- 2025-07_24 : Add AnsibleAutoNginxConfig, Update DNS(+8.8.8.8) and handler always run now(changed_when: true).
+- 2025-07_24 : Add AnsibleAutoNginxConfig, Update DNS(+8.8.8.8) and handler always run now(changed_when: true)
 
 ### Scripts
 ---

@@ -22,7 +22,7 @@
         ssl_city: "Seoul"
         ssl_org: "Example Company"
         ssl_ou: "Example Unit"
-        ssl_cn: "www3.example.com"
+        ssl_cn: "nginx.example.com"
         ssl_email: "root@localhost"
 
 - name: Web Test
