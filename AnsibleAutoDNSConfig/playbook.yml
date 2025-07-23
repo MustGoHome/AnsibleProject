@@ -18,6 +18,7 @@
         type: ethernet
         dns4:
           - "{{ dns_server_ip }}"
+          - 8.8.8.8
         dns4_search:
           - "{{ dns_server_domain }}"
         state: present

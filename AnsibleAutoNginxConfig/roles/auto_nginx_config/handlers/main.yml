@@ -1,5 +1,5 @@
 ---
-# handlers file for roles/auto_apache_config
+# handlers file for roles/auto_nginx_config
 - name: Restart Tomcat
   ansible.builtin.systemd:
     name: tomcat
@@ -7,8 +7,8 @@
     enabled: true
     daemon_reload: true
 
-- name: Restart Apache
+- name: Restart Nginx
   ansible.builtin.systemd:
-    name: httpd
+    name: nginx
     state: restarted
     enabled: true

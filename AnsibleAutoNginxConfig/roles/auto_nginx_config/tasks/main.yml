@@ -1,12 +1,11 @@
 ---
-# tasks file for roles/auto_apache_config
+# tasks file for roles/auto_nginx_config
 - name: Install Packages
   ansible.builtin.dnf:
     name:
       - "{{ jdk_package }}"
-      - httpd
+      - nginx
       - python3-pip
-      - mod_ssl
     state: present
 
 - name: PIP Install cryptography
@@ -51,23 +50,14 @@
     group: root
     mode: '0755'
 
-- name: Deploy /etc/httpd/conf/httpd.conf
+- name: Deploy /etc/nginx/nginx.conf
   ansible.builtin.template:
-    src: httpd.conf.j2
-    dest: /etc/httpd/conf/httpd.conf
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
     owner: root
     group: root
     mode: '0644'
-
-- name: Deploy /etc/httpd/conf.d/ssl.conf
-  ansible.builtin.template:
-    src: ssl.conf.j2
-    dest: /etc/httpd/conf.d/ssl.conf
-    owner: root
-    group: root
-    mode: '0644'
-    validate: httpd -t
-  notify: Restart Apache
+  notify: Restart Nginx
   changed_when: true
 
 - name: Create Private Key
