@@ -6,7 +6,8 @@
 - 2025-07-21 : Add AnsibleAutoDNSConfig
 - 2025-07-22 : Add AnsibleAutoApacheConfig
 - 2025-07-22 : Update AnsibleAutoDNSConfig - DNS -> DDNS(used TSIG)
-- 2025-07_24 : Add AnsibleAutoNginxConfig, Update DNS(+8.8.8.8) and handler always run now(changed_when: true)
+- 2025-07-24 : Add AnsibleAutoNginxConfig, Update DNS(+8.8.8.8) and handler always run now(changed_when: true)
+- 2025-07-25 : Add AnsibleAutoFTPConfig
 
 ### Scripts
 ---
@@ -97,4 +98,22 @@
           ssl_ou: "Example Unit"
           ssl_cn: "www3.example.com"
           ssl_email: "root@localhost"
+    ```
+
+2. **AnsibleAutoFTPConfig** : Automatically set up the FTPS server through the Answer Manager server.
+    - _Set some variables and proceed._
+    ```EXAMPLE
+    hosts: ftp_server
+    tasks:
+      - name: Role - auto_ftp_config
+        ansible.builtin.import_role:
+          name: auto_ftp_config
+        vars:
+          ftp_listen: 2121
+          ftp_banner_file: /etc/vsftpd/banner.txt 
+          ftp_user: fedora
+          passive_min_port: 30000
+          passive_max_port: 30100
+          data_listen: "{{ passive_min_port }}-{{ passive_max_port }}"
+          ssl_cert_file: /etc/pki/tls/certs/vsftpd.pem
     ```

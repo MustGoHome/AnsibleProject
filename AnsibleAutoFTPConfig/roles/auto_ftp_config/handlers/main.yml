@@ -1,0 +1,7 @@
+---
+# handlers file for roles/auto_ftp_config
+- name: Restart vsftpd
+  ansible.builtin.systemd:
+    name: vsftpd
+    state: restarted
+    enabled: true

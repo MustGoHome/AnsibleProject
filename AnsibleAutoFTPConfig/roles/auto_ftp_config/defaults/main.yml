@@ -1,0 +1,13 @@
+---
+# defaults file for roles/auto_ftp_config
+ftp_listen: 2121
+ftp_banner_file: /etc/vsftpd/banner.txt 
+ftp_user: fedora
+
+passive_min_port: 30000
+passive_max_port: 30100
+data_listen: "{{ passive_min_port }}-{{ passive_max_port }}"
+
+ssl_crt_path: /etc/pki/tls/certs/vsftpd.pem
+ssl_key_path: /etc/pki/tls/private/vsftpd.key
+ssl_merge_path: /etc/pki/tls/certs/vsftpd_merged.pem

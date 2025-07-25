@@ -1,0 +1,35 @@
+---
+- name: FTPS Server Config
+  hosts: ftp_server
+  tasks:
+    - name: Role - auto_ftp_config
+      ansible.builtin.import_role:
+        name: auto_ftp_config
+      vars:
+        ftp_listen: 2121
+        ftp_banner_file: /etc/vsftpd/banner.txt 
+        ftp_user: fedora
+        passive_min_port: 30000
+        passive_max_port: 30100
+        data_listen: "{{ passive_min_port }}-{{ passive_max_port }}"
+        ssl_cert_file: /etc/pki/tls/certs/vsftpd.pem
+
+- name: FTPS Test
+  hosts: localhost
+  tasks:
+    - name: Install Package
+      ansible.builtin.dnf:
+        name: lftp
+        state: present
+
+    - name: Set Environments
+      ansible.builtin.shell:
+        cmd: |
+          set ftp:ssl-auth TLS \n
+          set ftp:ssl-force true \n
+          set ftp:ssl-protect-list yes \n
+          set ftp:ssl-protect-data yes \n
+          set ftp:ssl-protect-fxp yes \n
+          set ssl:verify-certificate no > ~/.lftprc
+
+# [ansible@ansible ~]$ lftp -u fedora node2 -p 2121

@@ -1,0 +1,70 @@
+---
+# tasks file for roles/auto_ftp_config
+- name: Install Packages
+  ansible.builtin.dnf:
+    name: [vsftpd, ftp]
+    state: present
+
+- name: Deploy /etc/vsftpd/vsftpd.conf
+  ansible.builtin.template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd/vsftpd.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart vsftpd
+  changed_when: true
+ 
+- name: Deploy /etc/vsftpd/user_list
+  ansible.builtin.template:
+    src: user_list.j2
+    dest: /etc/vsftpd/user_list
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Deploy /etc/vsftpd/chroot_list
+  ansible.builtin.template:
+    src: chroot_list.j2
+    dest: /etc/vsftpd/chroot_list
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Deploy /etc/vsftpd/banner.txt
+  ansible.builtin.copy:
+    src: banner.txt
+    dest: /etc/vsftpd/banner.txt
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create Private Key
+  community.crypto.openssl_privatekey:
+    path: "{{ ssl_key_path }}"
+    type: RSA
+    size: 2048
+    mode: '0600'
+
+- name: Create Self-signed Certificate
+  community.crypto.x509_certificate:
+    path: "{{ ssl_crt_path }}"
+    privatekey_path: "{{ ssl_key_path }}"
+    provider: selfsigned
+    selfsigned_not_after: "+3650d"
+    mode: '0644'
+
+- name: Merget rivate Key and Self-signed Certificate
+  ansible.builtin.shell:
+    cmd: |
+      cat {{ ssl_key_path }} {{ ssl_crt_path }} > {{ ssl_merge_path }}
+
+- name: Add Service For Firewalld
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: 
+    - "{{ ftp_listen }}/tcp"
+    - "{{ data_listen }}/tcp"
