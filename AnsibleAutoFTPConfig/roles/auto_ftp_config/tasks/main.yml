@@ -54,7 +54,7 @@
     selfsigned_not_after: "+3650d"
     mode: '0644'
 
-- name: Merget rivate Key and Self-signed Certificate
+- name: Merget Private Key and Self-signed Certificate
   ansible.builtin.shell:
     cmd: |
       cat {{ ssl_key_path }} {{ ssl_crt_path }} > {{ ssl_merge_path }}

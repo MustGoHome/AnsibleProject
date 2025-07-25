@@ -101,6 +101,7 @@
     ```
 
 2. **AnsibleAutoFTPConfig** : Automatically set up the FTPS server through the Answer Manager server.
+    - _TEST CMD : lftp -u fedora node2 -p 2121_
     - _Set some variables and proceed._
     ```EXAMPLE
     hosts: ftp_server
