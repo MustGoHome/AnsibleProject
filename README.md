@@ -8,6 +8,7 @@
 - 2025-07-22 : Update AnsibleAutoDNSConfig - DNS -> DDNS(used TSIG)
 - 2025-07-24 : Add AnsibleAutoNginxConfig, Update DNS(+8.8.8.8) and handler always run now(changed_when: true)
 - 2025-07-25 : Add AnsibleAutoFTPConfig
+- 2025-07_26 : Add AnsibleAutoLogConfig
 
 ### Scripts
 ---
@@ -100,7 +101,7 @@
           ssl_email: "root@localhost"
     ```
 
-2. **AnsibleAutoFTPConfig** : Automatically set up the FTPS server through the Answer Manager server.
+5. **AnsibleAutoFTPConfig** : Automatically set up the FTPS server through the Answer Manager server.
     - _TEST CMD : lftp -u fedora node2 -p 2121_
     - _Set some variables and proceed._
     ```EXAMPLE
@@ -117,4 +118,24 @@
           passive_max_port: 30100
           data_listen: "{{ passive_min_port }}-{{ passive_max_port }}"
           ssl_cert_file: /etc/pki/tls/certs/vsftpd.pem
+    ```
+
+6. **AnsibleAutoLogConfig** : Automatically set up the Log server through the Answer Manager server.
+    - _TEST CMD : firefox log.example.com:9000_
+    - _Set some variables and proceed._
+    ```EXAMPLE
+    hosts: log_server
+    tasks:
+      - name: Role - auto_log_config
+        ansible.builtin.import_role:
+          name: auto_log_config
+        vars:
+          jdk_package: java-1.8.0-openjdk
+          mongodb_baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/6.0/x86_64/
+          mongodb_package: mongodb-org
+          elastic_baseurl: https://artifacts.elastic.co/packages/oss-7.x/yum
+          elastic_rpm_key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+          elastic_package: elasticsearch-oss
+          rsyslog_listen: 1514
+          graylog_listen: 9000
     ```

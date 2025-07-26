@@ -1,0 +1,58 @@
+---
+- name: Graylog Server Config
+  hosts: log_server
+  tasks:
+    - name: Role - auto_log_config
+      ansible.builtin.import_role:
+        name: auto_log_config
+      vars:
+        jdk_package: java-1.8.0-openjdk
+        mongodb_baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/6.0/x86_64/
+        mongodb_package: mongodb-org
+        elastic_baseurl: https://artifacts.elastic.co/packages/oss-7.x/yum
+        elastic_rpm_key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        elastic_package: elasticsearch-oss
+        rsyslog_listen: 1514
+        graylog_listen: 9000
+
+    - name: Role - graylog2.graylog
+      ansible.builtin.include_role:
+        name: roles/graylog2.graylog
+      tags:
+        - "graylog"
+      vars:
+        # Graylog vars
+        graylog_version: 6.1
+        graylog_install_java: True
+        # Insert your own here. Generate with: pwgen -s 96 1
+        graylog_password_secret: "u0kNoJlVTQXyfherJ8BP7pOcsrCzWoNhQPDTa3njlqGl3QayuoY07IcPIGGZ4FF2RZ1MkWdHsgdVFoNKoN8rAtmj9vq4Q732"
+        # Insert your own root_password_sha2 here.
+        graylog_root_password_sha2: "135698ee5b39ac9515ae9c03ff0d9525bb1dcdd50824b4aa97a8e20c9e3eb2a7"
+        graylog_http_bind_address: "{{ ansible_default_ipv4.address }}:9000"
+        graylog_http_publish_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
+        graylog_http_external_uri: "http://{{ ansible_default_ipv4.address }}:9000/"
+        graylog_install_open_package: True
+        graylog_install_enterprise_package: False
+
+- name: Add Log Server DNS Record
+  hosts: localhost
+  tasks:
+    - name: Install PIP3
+      ansible.builtin.dnf:
+        name: python3-pip
+        state: present
+
+    - name: PIP Install Package dnspython
+      ansible.builtin.pip:
+        name: dnspython
+        state: present
+
+    - name: Add DNS - log IN A 192.168.20.30
+      community.general.nsupdate:
+        key_algorithm: hmac-sha256
+        key_name: ddns-key
+        key_secret: upcPpa6RKpen4/hFJ7p7TikAflVaisukxATItbES4Zw=
+        server: 192.168.20.10
+        zone: example.com
+        record: log
+        value: ["192.168.20.30"]

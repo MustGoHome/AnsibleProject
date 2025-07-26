@@ -1,0 +1,13 @@
+---
+# handlers file for roles/ansible_log_config
+- name: Restart MongoDB
+  ansible.builtin.systemd:
+    name: mongod
+    state: restarted
+    enabled: true
+
+- name: Restart Elasticsearch
+  ansible.builtin.systemd:
+    name: elasticsearch
+    state: restarted
+    enabled: true
