@@ -1,0 +1,6 @@
+---
+# defaults file for roles/auto_ha_config
+ha_listen: 80
+haproxy_node:
+  node1: 192.168.20.20:80
+  node2: 192.168.20.20:80

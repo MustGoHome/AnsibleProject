@@ -1,0 +1,24 @@
+---
+# tasks file for roles/auto_ha_config
+- name: Install Package
+  ansible.builtin.dnf:
+    name: haproxy
+    state: present
+
+- name: Deploy /etc/haproxy/haproxy.cfg
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+    validate: haproxy -f %s -c
+  notify: Restart haproxy
+  changed_when: true
+
+- name: Add Service For Firewalld
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    immediate: true
+    state: enabled

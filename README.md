@@ -9,6 +9,7 @@
 - 2025-07-24 : Add AnsibleAutoNginxConfig, Update DNS(+8.8.8.8) and handler always run now(changed_when: true)
 - 2025-07-25 : Add AnsibleAutoFTPConfig
 - 2025-07_26 : Add AnsibleAutoLogConfig
+- 2025-07-27 : Add AnsibleAutoHAConfig
 
 ### Scripts
 ---
@@ -138,4 +139,25 @@
           elastic_package: elasticsearch-oss
           rsyslog_listen: 1514
           graylog_listen: 9000
+    ```
+2. **AnsibleAutoHAConfig** : Automatically set up the HA server and client through the Answer Manager server.
+    - _Set some variables and proceed._
+    ```EXAMPLE
+    hosts: ha_server
+    tasks:
+      - name: Role - auto_nfs_config
+        ansible.builtin.include_role:
+          name: auto_nfs_config
+        vars:
+          shared_directory: /www
+          shared_subent: 192.168.20.0/24
+          shared_options: (rw,no_root_squash,nohide,subtree_check)
+      - name: Role - auto_ha_config
+        ansible.builtin.include_role:
+          name: auto_ha_config
+        vars:
+          ha_listen: 80
+          haproxy_node:
+            node1: 192.168.20.20:80
+            node2: 192.168.20.30:80
     ```

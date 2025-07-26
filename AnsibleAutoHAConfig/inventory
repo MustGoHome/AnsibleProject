@@ -1,0 +1,6 @@
+[ha_server]
+localhost
+
+[ha_client]
+node1
+node2

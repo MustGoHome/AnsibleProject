@@ -1,0 +1,7 @@
+---
+# handlers file for roles/auto_ha_config
+- name: Restart haproxy
+  ansible.builtin.systemd:
+    name: haproxy
+    state: restarted
+    enabled: true

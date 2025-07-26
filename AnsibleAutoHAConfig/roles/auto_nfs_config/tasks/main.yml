@@ -1,0 +1,26 @@
+---
+# tasks file for roles/auto_nfs_config
+- name: Install Package
+  ansible.builtin.dnf:
+    name: nfs-utils
+    state: present
+
+- name: Create Shared Direcotry
+  ansible.builtin.file:
+    path: "{{ shared_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Config /etc/exports
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    line: "{{ shared_directory }} {{ shared_subent }}{{ shared_options }}"
+  notify: Restart NFS
+  changed_when: true
+  
+- name: Add Service For Firewalld
+  ansible.posix.firewalld:
+    service: nfs
+    permanent: true
+    immediate: true
+    state: enabled

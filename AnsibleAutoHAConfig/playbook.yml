@@ -1,0 +1,46 @@
+---
+- name: HA Server Config
+  hosts: ha_server
+  tasks:
+    - name: Role - auto_nfs_config
+      ansible.builtin.include_role:
+        name: auto_nfs_config
+      vars:
+        shared_directory: /www
+        shared_subent: 192.168.20.0/24
+        shared_options: (rw,no_root_squash,nohide,subtree_check)
+    - name: Role - auto_ha_config
+      ansible.builtin.include_role:
+        name: auto_ha_config
+      vars:
+        ha_listen: 80
+        haproxy_node:
+          node1: 192.168.20.20:80
+          node2: 192.168.20.30:80
+
+- name: NFS Client Config
+  hosts: ha_client
+  vars:
+    shared_directory: /www
+    mounted_directory: /www
+    nfs_server: 192.168.20.10
+  tasks:
+    - name: Install Package
+      ansible.builtin.dnf:
+        name: nfs-utils
+        state: present
+    
+    - name: Create Shared Directory
+      ansible.builtin.file:
+        path: "{{ mounted_directory }}"
+        state: directory
+        mode: '0755'
+    
+    - name: NFS Mount Permanently
+      ansible.posix.mount:
+        src: "{{ nfs_server }}:{{ shared_directory }}"
+        path: "{{ mounted_directory }}"
+        opts: rw,sync
+        boot: true
+        state: mounted
+        fstype: nfs

@@ -1,0 +1,5 @@
+---
+# defaults file for roles/auto_nfs_config
+shared_directory: /www
+shared_subent: 192.168.20.0/24
+shared_options: (rw,no_root_squash,nohide,subtree_check)
