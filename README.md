@@ -140,7 +140,7 @@
           rsyslog_listen: 1514
           graylog_listen: 9000
     ```
-2. **AnsibleAutoHAConfig** : Automatically set up the HA server and client through the Answer Manager server.
+7. **AnsibleAutoHAConfig** : Automatically set up the HA server and client through the Answer Manager server.
     - _Set some variables and proceed._
     ```EXAMPLE
     hosts: ha_server
