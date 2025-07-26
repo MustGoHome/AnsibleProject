@@ -1,18 +1,18 @@
----
-- name: FTPS Server Config
-  hosts: ftp_server
-  tasks:
-    - name: Role - auto_ftp_config
-      ansible.builtin.import_role:
-        name: auto_ftp_config
-      vars:
-        ftp_listen: 2121
-        ftp_banner_file: /etc/vsftpd/banner.txt 
-        ftp_user: fedora
-        passive_min_port: 30000
-        passive_max_port: 30100
-        data_listen: "{{ passive_min_port }}-{{ passive_max_port }}"
-        ssl_cert_file: /etc/pki/tls/certs/vsftpd.pem
+# ---
+# - name: FTPS Server Config
+#   hosts: ftp_server
+#   tasks:
+#     - name: Role - auto_ftp_config
+#       ansible.builtin.import_role:
+#         name: auto_ftp_config
+#       vars:
+#         ftp_listen: 2121
+#         ftp_banner_file: /etc/vsftpd/banner.txt 
+#         ftp_user: fedora
+#         passive_min_port: 30000
+#         passive_max_port: 30100
+#         data_listen: "{{ passive_min_port }}-{{ passive_max_port }}"
+#         ssl_cert_file: /etc/pki/tls/certs/vsftpd.pem
 
 - name: FTPS Test
   hosts: localhost
@@ -31,5 +31,25 @@
           set ftp:ssl-protect-data yes \n
           set ftp:ssl-protect-fxp yes \n
           set ssl:verify-certificate no > ~/.lftprc
+    
+    - name: Install PIP3
+      ansible.builtin.dnf:
+        name: python3-pip
+        state: present
+
+    - name: PIP Install Package dnspython
+      ansible.builtin.pip:
+        name: dnspython
+        state: present
+
+    - name: Add DNS - ftp IN A 192.168.20.30
+      community.general.nsupdate:
+        key_algorithm: hmac-sha256
+        key_name: ddns-key
+        key_secret: upcPpa6RKpen4/hFJ7p7TikAflVaisukxATItbES4Zw=
+        server: 192.168.20.10
+        zone: example.com
+        record: ftp
+        value: ["192.168.20.30"]
 
 # [ansible@ansible ~]$ lftp -u fedora node2 -p 2121
